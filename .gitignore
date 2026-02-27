@@ -1,0 +1,20 @@
+# Xcode
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcworkspace/xcuserdata/
+ios/build/
+ios/DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.moved-aside
+
+# Cloudflare / Node
+backend/node_modules/
+backend/.wrangler/
+backend/dist/
+
+# Environment
+.env
+.dev.vars
