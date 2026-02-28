@@ -28,7 +28,8 @@ piper/
 2. [docs/design-docs/core-beliefs.md](docs/design-docs/core-beliefs.md) — non-negotiable principles
 3. [docs/product-specs/index.md](docs/product-specs/index.md) — what Piper does and for whom
 4. Domain docs: [docs/BACKEND.md](docs/BACKEND.md) or [docs/IOS.md](docs/IOS.md)
-5. [docs/exec-plans/active/](docs/exec-plans/active/) — check for active work before starting
+5. [docs/WORKFLOW.md](docs/WORKFLOW.md) — how features get built (agent-agnostic)
+6. [docs/exec-plans/active/](docs/exec-plans/active/) — check for active work before starting
 
 ## Invariants (never violate)
 - No user accounts. No auth on the backend. Anonymous by design.
@@ -39,6 +40,9 @@ piper/
 - No reading features. No engagement features. Stay a pipe.
 
 ## Workflow
+The build workflow is agent-agnostic and fully described in [docs/WORKFLOW.md](docs/WORKFLOW.md).
+The Claude Code implementation lives in `.claude/skills/build/`.
+
 - Every change goes through a PR
 - Check [docs/exec-plans/active/](docs/exec-plans/active/) for an active plan before starting
 - Validate your own changes before opening a PR (lints, build, tests)
