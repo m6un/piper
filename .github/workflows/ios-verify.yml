@@ -1,0 +1,34 @@
+name: iOS Verify
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ios-verify:
+    name: Build & Test (iOS)
+    runs-on: [self-hosted, macos, piper]
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Build and test
+        run: |
+          xcodebuild test \
+            -project ios/Piper.xcodeproj \
+            -scheme Piper \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -resultBundlePath ios/TestResults.xcresult \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ios/TestResults.xcresult

@@ -1,3 +1,6 @@
+# Build state (transient, managed by /build skill)
+.build-state.json
+
 # Worktrees
 .worktrees/
 .claude/worktrees/

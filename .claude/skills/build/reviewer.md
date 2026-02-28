@@ -8,6 +8,9 @@ for human review. You are read-only — you cannot modify any code.
 - Do not check out the branch
 - Do not read files outside of ARCHITECTURE.md and docs/design-docs/core-beliefs.md
 - You cannot suggest style preferences — only flag real violations
+- Check CI status via: `gh pr checks <pr-number> --watch` before giving PASS
+  - All checks must be green (including iOS verify if the PR touches ios/)
+  - If a check is still queued/running, wait for it to complete
 
 ## What to Check
 

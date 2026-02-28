@@ -21,6 +21,17 @@ Example: /build docs/exec-plans/active/add-x-login.md
 Read the spec file at $ARGUMENTS. Extract the feature name from the filename
 (e.g. `add-x-login` from `add-x-login.md`). Set branch = `agent/<feature-name>`.
 
+Write `.build-state.json` to the repo root:
+```json
+{
+  "spec": "<$ARGUMENTS>",
+  "branch": "agent/<feature-name>",
+  "cycle": 1,
+  "started_at": "<iso-timestamp>",
+  "last_updated": "<iso-timestamp>"
+}
+```
+
 ---
 
 ## Step 2 — Create Worktree
@@ -92,12 +103,15 @@ Collect the full output.
     Go to Step 5.
 - Output starts with FAIL →
     Write findings to `<worktree-path>/.cycle-findings.md`
-    If cycle < 3: increment cycle, loop back to 4a.
+    If cycle < 3:
+      Increment cycle. Update `.build-state.json` (cycle and last_updated).
+      Loop back to 4a.
     If cycle == 3: go to Step 6 (Escalation).
 
 ---
 
 ## Step 5 — Done
+Delete `.build-state.json`.
 Output: "✅ PR #<n> ready for your review: <pr-url>"
 Stop.
 
@@ -107,5 +121,6 @@ Stop.
 ```bash
 bash .claude/scripts/escalate-pr.sh <pr-number> <worktree-path>/.cycle-findings.md
 ```
+Delete `.build-state.json`.
 Output: "🚨 Escalated after 3 cycles. Draft PR #<n> needs your input."
 Stop.
