@@ -47,3 +47,4 @@ The Claude Code implementation lives in `.claude/skills/build/`.
 - Check [docs/exec-plans/active/](docs/exec-plans/active/) for an active plan before starting
 - Validate your own changes before opening a PR (lints, build, tests)
 - Keep PRs small and focused — one task per PR
+- Commit messages: one line, brief and crisp. No bullet points, no body.
