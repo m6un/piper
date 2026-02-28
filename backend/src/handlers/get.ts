@@ -40,6 +40,9 @@ export async function handleGet(uuid: string, env: Env): Promise<Response> {
 
   return new Response(renderHtml(stored.title, stored.content), {
     status: 200,
-    headers: { "Content-Type": "text/html; charset=utf-8" },
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    },
   });
 }

@@ -2,8 +2,20 @@ import { env, createExecutionContext, waitOnExecutionContext } from "cloudflare:
 import { describe, it, expect } from "vitest";
 import worker from "./index";
 
-// The worker domain used in URL responses
-const WORKER_DOMAIN = "https://piper.workers.dev";
+describe("OPTIONS preflight", () => {
+  it("returns 204 with CORS headers for OPTIONS /save", async () => {
+    const request = new Request("https://piper.workers.dev/save", {
+      method: "OPTIONS",
+    });
+    const ctx = createExecutionContext();
+    const response = await worker.fetch(request, env, ctx);
+    await waitOnExecutionContext(ctx);
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
+    expect(response.headers.get("access-control-allow-methods")).toContain("POST");
+  });
+});
 
 describe("POST /save", () => {
   it("returns { url } containing a UUID path when given title and content", async () => {
@@ -17,6 +29,7 @@ describe("POST /save", () => {
     await waitOnExecutionContext(ctx);
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
     const body = await response.json() as { url: string };
     expect(body.url).toBeDefined();
     expect(body.url).toMatch(/^https:\/\/piper\.workers\.dev\/[0-9a-f-]{36}$/);
@@ -33,6 +46,7 @@ describe("POST /save", () => {
     await waitOnExecutionContext(ctx);
 
     expect(response.status).toBe(400);
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
   });
 
   it("returns 400 when content is missing", async () => {
@@ -46,6 +60,7 @@ describe("POST /save", () => {
     await waitOnExecutionContext(ctx);
 
     expect(response.status).toBe(400);
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
   });
 
   it("returns 400 when body is empty", async () => {
@@ -59,6 +74,7 @@ describe("POST /save", () => {
     await waitOnExecutionContext(ctx);
 
     expect(response.status).toBe(400);
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
   });
 });
 
@@ -82,6 +98,7 @@ describe("GET /{uuid}", () => {
     await waitOnExecutionContext(getCtx);
 
     expect(getResponse.status).toBe(200);
+    expect(getResponse.headers.get("access-control-allow-origin")).toBe("*");
     const html = await getResponse.text();
     expect(html).toContain("My Article");
     expect(html).toContain("<p>Article body</p>");
@@ -89,8 +106,8 @@ describe("GET /{uuid}", () => {
   });
 
   it("returns 404 for an unknown UUID", async () => {
-    const uuid = "00000000-0000-0000-0000-000000000000";
-    const request = new Request(`${WORKER_DOMAIN}/${uuid}`);
+    const uuid = "00000000-0000-4000-8000-000000000000";
+    const request = new Request(`https://piper.workers.dev/${uuid}`);
     const ctx = createExecutionContext();
     const response = await worker.fetch(request, env, ctx);
     await waitOnExecutionContext(ctx);

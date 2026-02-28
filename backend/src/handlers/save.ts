@@ -11,7 +11,10 @@ export async function handleSave(request: Request, env: Env): Promise<Response> 
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 
@@ -27,7 +30,10 @@ export async function handleSave(request: Request, env: Env): Promise<Response> 
   ) {
     return new Response(JSON.stringify({ error: "Missing required fields: title, content" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 
@@ -44,6 +50,9 @@ export async function handleSave(request: Request, env: Env): Promise<Response> 
   const url = `${origin}/${uuid}`;
   return new Response(JSON.stringify({ url }), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
   });
 }
