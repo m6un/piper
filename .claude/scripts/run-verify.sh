@@ -10,6 +10,11 @@ if [ -z "$WORKTREE_PATH" ]; then
   exit 1
 fi
 
+if [ ! -d "$WORKTREE_PATH" ]; then
+  echo "ERROR: worktree path does not exist: $WORKTREE_PATH" >&2
+  exit 1
+fi
+
 cd "$WORKTREE_PATH"
 
 FAILED=0

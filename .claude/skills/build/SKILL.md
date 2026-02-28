@@ -21,15 +21,18 @@ Example: /build docs/exec-plans/active/add-x-login.md
 Read the spec file at $ARGUMENTS. Extract the feature name from the filename
 (e.g. `add-x-login` from `add-x-login.md`). Set branch = `agent/<feature-name>`.
 
-Write `.build-state.json` to the repo root:
-```json
+Write `.build-state.json` to the repo root using real timestamps:
+```bash
+NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+cat > .build-state.json <<EOF
 {
-  "spec": "<$ARGUMENTS>",
+  "spec": "$ARGUMENTS",
   "branch": "agent/<feature-name>",
   "cycle": 1,
-  "started_at": "<iso-timestamp>",
-  "last_updated": "<iso-timestamp>"
+  "started_at": "$NOW",
+  "last_updated": "$NOW"
 }
+EOF
 ```
 
 ---
@@ -104,7 +107,8 @@ Collect the full output.
 - Output starts with FAIL →
     Write findings to `<worktree-path>/.cycle-findings.md`
     If cycle < 3:
-      Increment cycle. Update `.build-state.json` (cycle and last_updated).
+      Increment cycle. Update `.build-state.json` (cycle and last_updated fields).
+      Use `date -u +"%Y-%m-%dT%H:%M:%SZ"` for the new last_updated value.
       Loop back to 4a.
     If cycle == 3: go to Step 6 (Escalation).
 

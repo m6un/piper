@@ -16,18 +16,17 @@ fi
 
 cd "$WORKTREE_PATH"
 
-# Nothing to commit — bail early
-if git diff --quiet && git diff --cached --quiet; then
-  echo "Nothing to commit in worktree $WORKTREE_PATH" >&2
-  exit 1
+# Commit and push only if there are uncommitted changes
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  git add -A
+  git commit -m "feat: $FEATURE_NAME"
+  git push -u origin "$BRANCH"
+elif git rev-parse --verify "origin/$BRANCH" &>/dev/null; then
+  # Branch already pushed — nothing to do
+  :
+else
+  git push -u origin "$BRANCH"
 fi
-
-git add -A
-git commit -m "feat: $FEATURE_NAME
-
-Built by agent — spec: $SPEC_FILE"
-
-git push -u origin "$BRANCH"
 
 # Create PR if one doesn't exist for this branch, otherwise just push
 EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number' 2>/dev/null || echo "")
