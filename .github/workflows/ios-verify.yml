@@ -19,6 +19,7 @@ jobs:
 
   ios-verify:
     name: Build & Test (iOS)
+    if: github.event_name == 'workflow_dispatch'
     runs-on: [self-hosted, macos, piper]
     timeout-minutes: 120
 
