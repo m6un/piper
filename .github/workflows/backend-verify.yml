@@ -1,0 +1,40 @@
+name: Backend Verify
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-verify.yml'
+      - '.github/scripts/lint-backend-layers.sh'
+  workflow_dispatch:
+
+jobs:
+  backend-verify:
+    name: Type-check, Lint & Layer Rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: cd backend && npm ci
+
+      - name: Type check
+        run: cd backend && npm run type-check
+
+      - name: Lint
+        run: cd backend && npm run lint
+
+      - name: Test
+        run: cd backend && npm test
+
+      - name: Layer rules
+        run: bash .github/scripts/lint-backend-layers.sh

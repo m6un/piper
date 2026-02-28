@@ -24,12 +24,18 @@ if [ -d "backend" ]; then
 
   echo "▶ backend: test"
   (cd backend && npm test 2>&1) || { echo "✗ backend:test failed"; FAILED=1; }
+
+  echo "▶ backend: layer rules"
+  bash .github/scripts/lint-backend-layers.sh 2>&1 || { echo "✗ backend:layer-rules failed"; FAILED=1; }
 fi
 
 # ── iOS (Swift) ──────────────────────────────────────────────────────────────
 # Note: xcodebuild not available on cloud VMs — swiftlint only for now.
 # Full build/test requires a macOS runner or local execution.
 if [ -d "ios" ]; then
+  echo "▶ ios: layer rules"
+  bash .github/scripts/lint-ios-layers.sh 2>&1 || { echo "✗ ios:layer-rules failed"; FAILED=1; }
+
   if command -v swiftlint &>/dev/null; then
     echo "▶ ios: swiftlint"
     swiftlint --path ios 2>&1 || { echo "✗ ios:swiftlint failed"; FAILED=1; }

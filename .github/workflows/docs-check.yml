@@ -1,0 +1,23 @@
+name: Docs Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - '.github/workflows/docs-check.yml'
+      - '.github/scripts/check-doc-links.sh'
+  workflow_dispatch:
+
+jobs:
+  docs-check:
+    name: Dead Link Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check doc links
+        run: bash .github/scripts/check-doc-links.sh

@@ -6,6 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  ios-layer-rules:
+    name: Layer Rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Layer rules
+        run: bash .github/scripts/lint-ios-layers.sh
+
   ios-verify:
     name: Build & Test (iOS)
     runs-on: [self-hosted, macos, piper]
