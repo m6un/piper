@@ -48,3 +48,4 @@ The Claude Code implementation lives in `.claude/skills/build/`.
 - Validate your own changes before opening a PR (lints, build, tests)
 - Keep PRs small and focused — one task per PR
 - Commit messages: one line, brief and crisp. No bullet points, no body.
+- Always push immediately after committing.
