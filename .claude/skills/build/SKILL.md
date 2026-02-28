@@ -113,6 +113,16 @@ Collect the full output.
 ## Step 5 — Done
 Delete `.build-state.json`.
 Output: "✅ PR #<n> ready for your review: <pr-url>"
+
+Spawn a retro subagent using .claude/skills/build/retro.md as the prompt.
+Pass:
+- Feature name
+- PR number
+- Worktree path
+- Total cycles taken
+- Spec content (full)
+
+Do not wait for the retro to complete — it runs independently.
 Stop.
 
 ---
