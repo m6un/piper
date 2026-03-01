@@ -35,7 +35,10 @@ function escapeHtml(text: string): string {
 export async function handleGet(uuid: string, env: Env): Promise<Response> {
   const stored = await getContent(env.CONTENT_STORE, uuid);
   if (stored === null) {
-    return new Response("Not Found", { status: 404 });
+    return new Response("Not Found", {
+      status: 404,
+      headers: { "Access-Control-Allow-Origin": "*" },
+    });
   }
 
   return new Response(renderHtml(stored.title, stored.content), {
@@ -43,6 +46,7 @@ export async function handleGet(uuid: string, env: Env): Promise<Response> {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
+      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'",
     },
   });
 }

@@ -4,6 +4,15 @@ interface Env {
   CONTENT_STORE: KVNamespace;
 }
 
+function isValidPayload(body: unknown): body is { title: string; content: string } {
+  if (typeof body !== "object" || body === null) return false;
+  const b = body as Record<string, unknown>;
+  return (
+    typeof b.title === "string" && b.title.trim() !== "" &&
+    typeof b.content === "string" && b.content.trim() !== ""
+  );
+}
+
 export async function handleSave(request: Request, env: Env): Promise<Response> {
   let body: unknown;
   try {
@@ -18,16 +27,7 @@ export async function handleSave(request: Request, env: Env): Promise<Response> 
     });
   }
 
-  if (
-    typeof body !== "object" ||
-    body === null ||
-    !("title" in body) ||
-    !("content" in body) ||
-    typeof (body as Record<string, unknown>).title !== "string" ||
-    typeof (body as Record<string, unknown>).content !== "string" ||
-    ((body as Record<string, unknown>).title as string).trim() === "" ||
-    ((body as Record<string, unknown>).content as string).trim() === ""
-  ) {
+  if (!isValidPayload(body)) {
     return new Response(JSON.stringify({ error: "Missing required fields: title, content" }), {
       status: 400,
       headers: {
@@ -37,7 +37,7 @@ export async function handleSave(request: Request, env: Env): Promise<Response> 
     });
   }
 
-  const { title, content } = body as { title: string; content: string };
+  const { title, content } = body;
   const uuid = crypto.randomUUID();
   const origin = new URL(request.url).origin;
 

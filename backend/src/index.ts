@@ -31,6 +31,6 @@ export default {
       return handleGet(uuidMatch[1], env);
     }
 
-    return new Response("Not Found", { status: 404 });
+    return new Response("Not Found", { status: 404, headers: CORS_HEADERS });
   },
 };
