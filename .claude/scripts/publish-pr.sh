@@ -34,7 +34,8 @@ EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number' 2>/de
 if [ -z "$EXISTING_PR" ]; then
   SPEC_CONTENT=$(cat "../$SPEC_FILE" 2>/dev/null || echo "See $SPEC_FILE")
 
-  PR_NUMBER=$(gh pr create \
+  # gh pr create prints the PR URL on stdout; extract the number from the URL.
+  PR_URL=$(gh pr create \
     --title "feat: $FEATURE_NAME" \
     --body "$(cat <<EOF
 ## Summary
@@ -45,10 +46,9 @@ $SPEC_CONTENT
 
 EOF
 )" \
-    --head "$BRANCH" \
-    --json number \
-    --jq '.number')
+    --head "$BRANCH")
 
+  PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
   echo "$PR_NUMBER"
 else
   echo "$EXISTING_PR"
