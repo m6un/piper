@@ -3,6 +3,8 @@ name: iOS Verify
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'ios/**'
   workflow_dispatch:
 
 jobs:
@@ -19,7 +21,7 @@ jobs:
 
   ios-verify:
     name: Build & Test (iOS)
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
     runs-on: [self-hosted, macos, piper]
     timeout-minutes: 120
 
