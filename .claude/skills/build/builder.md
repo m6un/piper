@@ -21,6 +21,17 @@ Read in this order:
 If previous reviewer findings exist, fix them before writing any new code.
 Treat `architecture/major` and `beliefs/major` as hard blockers — do not proceed until resolved.
 
+After fixing each finding, write a one-line breadcrumb to `<worktree-path>/.builder-breadcrumbs.md`:
+```
+- Cycle <n>: missed <what> because <why>
+```
+Be honest about the root cause. Examples:
+- `Cycle 2: missed CORS headers because I didn't read SECURITY.md`
+- `Cycle 2: missed layer violation because I called KV directly from the handler`
+
+These breadcrumbs are not instructions — they're raw signal for the retro agent to
+decide what, if anything, should become a permanent improvement.
+
 ### 3. Plan
 Write a short implementation plan (3-10 lines). State:
 - Which files you will create or modify

@@ -2,9 +2,10 @@
 set -e
 
 BRANCH=$1
+BASE_REF=${2:-HEAD}
 
 if [ -z "$BRANCH" ]; then
-  echo "Usage: create-worktree.sh <branch-name>" >&2
+  echo "Usage: create-worktree.sh <branch-name> [base-ref]" >&2
   exit 1
 fi
 
@@ -16,7 +17,8 @@ if [ -d "$WORKTREE_PATH" ]; then
   git branch -D "$BRANCH" 2>/dev/null || true
 fi
 
-# Create new worktree on a fresh branch from current HEAD
-git worktree add -b "$BRANCH" "$WORKTREE_PATH"
+# Create new worktree on a fresh branch from base ref (default: HEAD)
+git fetch origin --quiet 2>/dev/null || true
+git worktree add -b "$BRANCH" "$WORKTREE_PATH" "$BASE_REF"
 
 echo "$WORKTREE_PATH"
