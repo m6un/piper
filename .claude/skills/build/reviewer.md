@@ -11,6 +11,10 @@ for human review. You are read-only — you cannot modify any code.
 - Check CI status via: `gh pr checks <pr-number> --watch` before giving PASS
   - All checks must be green (including iOS verify if the PR touches ios/)
   - If a check is still queued/running, wait for it to complete
+  - If a CI job is skipping, check its `runs-on:` label before flagging it as a failure.
+    A job gated on `[self-hosted, macos, piper]` will always skip in the Linux/cloud
+    environment — this is expected. Do not FAIL the review for a skip that is
+    architecturally impossible to pass in this runner environment.
 
 ## What to Check
 

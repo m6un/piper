@@ -17,6 +17,12 @@ Read in this order:
 - docs/design-docs/core-beliefs.md — the 8 beliefs. Your implementation must not violate any.
 - The relevant domain doc: docs/BACKEND.md and/or docs/IOS.md
 
+**Token scope constraint**: do not attempt to push changes to `.github/workflows/` files.
+The OAuth token in this environment does not have the `workflow` scope required to push
+workflow file changes — GitHub will reject the push. If you identify a CI workflow issue,
+document it as a finding in `.builder-breadcrumbs.md` and move on. Do not consume a cycle
+attempting an impossible push. (You can verify granted scopes with `gh auth status`.)
+
 ### 2. Address Previous Findings First (cycles 2+)
 If previous reviewer findings exist, fix them before writing any new code.
 Treat `architecture/major` and `beliefs/major` as hard blockers — do not proceed until resolved.
