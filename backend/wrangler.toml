@@ -5,5 +5,5 @@ compatibility_flags = ["nodejs_compat"]
 
 [[kv_namespaces]]
 binding = "CONTENT_STORE"
-id = "placeholder-for-local-dev"
-preview_id = "placeholder-for-preview"
+id = "2f63a987842447e0a9821644552ea4b9"
+preview_id = "c1fcc16cc8bd471dbe84afc97bf003d3"
