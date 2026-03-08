@@ -21,6 +21,9 @@ FAILED=0
 
 # ── Backend (Cloudflare Worker / TypeScript) ─────────────────────────────────
 if [ -d "backend" ]; then
+  echo "▶ backend: install dependencies"
+  (cd backend && npm install --silent 2>&1) || { echo "✗ backend:npm-install failed"; FAILED=1; }
+
   echo "▶ backend: type-check"
   (cd backend && npm run type-check 2>&1) || { echo "✗ backend:type-check failed"; FAILED=1; }
 
