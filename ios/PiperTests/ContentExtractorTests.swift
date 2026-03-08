@@ -3,7 +3,7 @@
 
 import XCTest
 import WebKit
-@testable import PiperShareExtension
+@testable import Piper
 
 // MARK: - Testable ContentExtractor
 

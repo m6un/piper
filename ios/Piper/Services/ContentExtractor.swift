@@ -23,7 +23,7 @@ public enum ContentExtractionError: Error, LocalizedError {
         case .unexpectedResultType:
             return "Unexpected result from content extraction"
         case .bundleResourceMissing:
-            return "readability.js resource is missing from the extension bundle"
+            return "readability.js resource is missing from the app bundle"
         }
     }
 }
@@ -43,7 +43,7 @@ public protocol ContentExtracting {
 /// article {title, content}.
 ///
 /// - Cookie injection: cookies are pushed into WKHTTPCookieStore before navigation.
-/// - readability.js: bundled as a resource in the PiperShareExtension target.
+/// - readability.js: bundled as a resource in the Piper app target.
 /// - Memory: WKWebView is released as soon as extraction completes.
 public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDelegate {
 
@@ -57,7 +57,7 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
 
     /// Designated initialiser.
     /// - Parameter bundle: The bundle from which readability.js is loaded.
-    ///   Defaults to the extension's own bundle.
+    ///   Defaults to the app's own bundle.
     public init(bundle: Bundle = Bundle(for: ContentExtractor.self)) {
         self.bundle = bundle
         super.init()

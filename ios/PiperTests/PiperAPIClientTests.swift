@@ -2,7 +2,7 @@
 // Uses MockURLSession to avoid real network calls.
 
 import XCTest
-@testable import PiperShareExtension
+@testable import Piper
 
 // MARK: - Mock URLSession infrastructure
 

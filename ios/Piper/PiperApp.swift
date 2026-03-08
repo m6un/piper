@@ -5,7 +5,10 @@ import SwiftUI
 struct PiperApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(cookieManager: CookieManager())
+            ContentView(
+                cookieManager: CookieManager(),
+                pipeline: PipelineController()
+            )
         }
     }
 }
