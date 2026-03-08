@@ -2,7 +2,7 @@
 // Verifies that Config.backendBaseURL is a valid, well-formed URL.
 
 import XCTest
-@testable import PiperShareExtension
+@testable import Piper
 
 final class ConfigTests: XCTestCase {
 

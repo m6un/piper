@@ -8,16 +8,19 @@ struct ContentView: View {
     // MARK: - Dependencies (injected)
 
     let cookieManager: CookieManager
+    let pipeline: PipelineController
 
     // MARK: - State
 
     @State private var connectionState: ConnectionState
     @State private var showingLoginSheet = false
+    @State private var showingPipeSheet = false
 
     // MARK: - Init
 
-    init(cookieManager: CookieManager) {
+    init(cookieManager: CookieManager, pipeline: PipelineController) {
         self.cookieManager = cookieManager
+        self.pipeline = pipeline
         _connectionState = State(initialValue: cookieManager.hasCookies ? .connected : .disconnected)
     }
 
@@ -34,7 +37,7 @@ struct ContentView: View {
             Text("Piper")
                 .font(.largeTitle.bold())
 
-            Text("Save X articles to Instapaper — one tap from the share sheet.")
+            Text("Save X articles to Instapaper — copy a URL, tap Pipe Article.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
@@ -57,17 +60,23 @@ struct ContentView: View {
                 .accessibilityIdentifier("connectButton")
 
             case .connected:
-                VStack(spacing: 12) {
+                VStack(spacing: 16) {
                     Label("Connected", systemImage: "checkmark.circle.fill")
                         .font(.headline)
                         .foregroundColor(.green)
                         .accessibilityIdentifier("connectedLabel")
 
-                    Text("You're all set. Use the share sheet to pipe articles.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+                    Button(action: { showingPipeSheet = true }) {
+                        Label("Pipe Article", systemImage: "arrow.up.doc")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.accentColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal, 32)
+                    .accessibilityIdentifier("pipeButton")
 
                     Button("Disconnect", role: .destructive) {
                         cookieManager.clearCookies()
@@ -91,6 +100,9 @@ struct ContentView: View {
                     break
                 }
             }
+        }
+        .sheet(isPresented: $showingPipeSheet) {
+            PipeView(pipeline: pipeline)
         }
     }
 }

@@ -1,5 +1,6 @@
 // CookieManagerTests.swift — Unit tests for CookieManager (Services layer)
 // Uses an in-memory mock CookieStorage (InMemoryStorage) so tests are fully isolated.
+// Also verifies that the production init uses UserDefaults.standard (not an App Group).
 
 import XCTest
 import WebKit
@@ -134,5 +135,28 @@ final class CookieManagerTests: XCTestCase {
         XCTAssertTrue(names.contains("x_token"))
         XCTAssertTrue(names.contains("twitter_token"))
         XCTAssertFalse(names.contains("google_token"))
+    }
+
+    // MARK: - Test 9: Production init uses UserDefaults.standard (not an App Group)
+
+    func testProductionInitUsesStandardUserDefaults() {
+        // Write a cookie via the production CookieManager (StandardStorage).
+        let productionManager = CookieManager()
+        let key = CookieManager.cookiesKey
+
+        // Start clean.
+        productionManager.clearCookies()
+        XCTAssertNil(UserDefaults.standard.data(forKey: key),
+                     "Should start with no data in UserDefaults.standard")
+
+        // Save a cookie and verify it lands in UserDefaults.standard.
+        let cookie = makeCookie(name: "prod_test", domain: ".x.com")
+        productionManager.saveCookies([cookie])
+
+        XCTAssertNotNil(UserDefaults.standard.data(forKey: key),
+                        "Cookie data must be stored in UserDefaults.standard, not an App Group")
+
+        // Clean up.
+        productionManager.clearCookies()
     }
 }

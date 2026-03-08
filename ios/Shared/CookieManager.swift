@@ -1,6 +1,6 @@
-// CookieManager.swift — Sole read/write point for App Group cookies (Services layer)
+// CookieManager.swift — Sole read/write point for cookie storage (Services layer)
 // All cookie persistence is funnelled through this type.
-// Views and other services must never access UserDefaults or the App Group directly.
+// Views and other services must never access UserDefaults directly.
 
 import Foundation
 import WebKit
@@ -8,7 +8,7 @@ import WebKit
 // MARK: - Storage abstraction (enables testing without UserDefaults in test files)
 
 /// A minimal key-value storage abstraction used by CookieManager.
-/// The production implementation wraps UserDefaults(suiteName:).
+/// The production implementation wraps UserDefaults.standard.
 /// Tests supply an in-memory mock that conforms to this protocol.
 public protocol CookieStorage {
     func data(forKey key: String) -> Data?
@@ -16,16 +16,13 @@ public protocol CookieStorage {
     func removeObject(forKey key: String)
 }
 
-/// Wraps the shared App Group UserDefaults to conform to CookieStorage.
-/// This is the only place in the codebase that names UserDefaults or the App Group suite.
-final class AppGroupStorage: CookieStorage {
+/// Wraps UserDefaults.standard to conform to CookieStorage.
+/// This is the only place in the codebase that names UserDefaults directly.
+final class StandardStorage: CookieStorage {
     private let defaults: UserDefaults
 
     init() {
-        guard let suite = UserDefaults(suiteName: "group.com.piper.app") else {
-            fatalError("CookieManager: could not open UserDefaults for group.com.piper.app")
-        }
-        self.defaults = suite
+        self.defaults = UserDefaults.standard
     }
 
     func data(forKey key: String) -> Data? { defaults.data(forKey: key) }
@@ -35,7 +32,7 @@ final class AppGroupStorage: CookieStorage {
 
 // MARK: - CookieManager
 
-/// Manages cookie persistence in the shared App Group.
+/// Manages cookie persistence in standard UserDefaults.
 ///
 /// Cookies are serialized as an array of property dictionaries and stored
 /// under `cookiesKey`. Only cookies whose domain contains ".x.com" or
@@ -54,9 +51,9 @@ public final class CookieManager {
 
     private let storage: CookieStorage
 
-    /// Initialises CookieManager backed by the real App Group storage.
+    /// Initialises CookieManager backed by standard UserDefaults.
     public convenience init() {
-        self.init(storage: AppGroupStorage())
+        self.init(storage: StandardStorage())
     }
 
     /// Initialises CookieManager with an injectable storage (used in tests).
@@ -71,7 +68,7 @@ public final class CookieManager {
         !loadCookies().isEmpty
     }
 
-    /// Persists `cookies` to the App Group, replacing any previously stored cookies.
+    /// Persists `cookies` to standard UserDefaults, replacing any previously stored cookies.
     /// Only X/Twitter-domain cookies are retained.
     public func saveCookies(_ cookies: [HTTPCookie]) {
         let filtered = cookies.filter { cookie in
