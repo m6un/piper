@@ -7,14 +7,15 @@ Piper lets users save paywalled or authenticated articles — initially from X (
 Instapaper's share extension cannot access authenticated content. If an article lives behind a login (X's paywall, subscriber-only threads), Instapaper sees a login wall, not the article.
 
 ## How It Works
-1. User logs into X once inside Piper's main app. Session cookies are stored on-device.
-2. User shares an article URL from X — Piper's Share Extension activates.
-3. The extension loads the article in an invisible WKWebView using the stored cookies.
-4. readability.js extracts the clean article body and title.
-5. Content is POSTed to a Cloudflare Worker, stored under a random UUID for 1 hour.
-6. The UUID URL is copied to the user's clipboard.
-7. User opens Instapaper, pastes the URL, saves normally.
-8. Instapaper fetches clean HTML from the worker. Content expires after 1 hour.
+1. User logs into X once inside Piper. Session cookies are stored on-device.
+2. User copies an article URL from the X app.
+3. User opens Piper — app reads the URL from clipboard.
+4. Piper loads the article in an invisible WKWebView using the stored cookies.
+5. readability.js extracts the clean article body and title.
+6. Content is POSTed to a Cloudflare Worker, stored under a random UUID for 1 hour.
+7. The UUID URL is copied to the user's clipboard.
+8. User opens Instapaper, pastes the URL, saves normally.
+9. Instapaper fetches clean HTML from the worker. Content expires after 1 hour.
 
 ## Target User
 Power readers who subscribe to content on X and want it in their reading queue without friction.

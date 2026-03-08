@@ -2,10 +2,11 @@
 
 ## Failure Modes
 
-### Share Extension
+### App
 | Failure | User-facing message |
 |---------|---------------------|
-| Cookies not set | "Connect your X account in the Piper app first" |
+| Not logged in | "Connect your X account first" |
+| No URL on clipboard | "Copy an article URL from X first" |
 | Page load fails | "Couldn't load article — check your connection" |
 | readability.js returns empty | "Couldn't extract article — try opening in Safari first" |
 | Worker POST fails | "Failed to save — please try again" |
@@ -20,6 +21,6 @@
 
 ## Principles
 - Fail loudly — never swallow errors silently
-- The extension must always reach a terminal state (success or failure)
+- The app must always reach a terminal state (success or failure)
 - Never leave the user uncertain about whether the save worked
 - No background retries — if it fails, surface it immediately

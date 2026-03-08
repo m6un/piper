@@ -3,7 +3,7 @@
 > This is a map, not a manual. Read what's pointed to here.
 
 ## What is Piper
-A one-tap iOS share extension that extracts authenticated content (e.g. X/Twitter articles) and serves it as a clean, ephemeral HTML page for Instapaper to consume. No accounts. No persistence beyond 1 hour.
+An iOS app that extracts authenticated content (e.g. X/Twitter articles) and serves it as a clean, ephemeral HTML page for Instapaper to consume. Copy a URL, open Piper, content lands in Instapaper. No accounts. No persistence beyond 1 hour.
 
 ## Repo Layout
 ```
