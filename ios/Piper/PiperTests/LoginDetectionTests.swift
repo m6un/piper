@@ -21,6 +21,9 @@ final class LoginDetectionTests: XCTestCase {
         let coordinator = makeCoordinator { _ in }
         let homeURL = URL(string: "https://x.com/home")!
         XCTAssertTrue(coordinator.isLoginSuccess(url: homeURL))
+
+        let twitterHomeURL = URL(string: "https://twitter.com/home")!
+        XCTAssertTrue(coordinator.isLoginSuccess(url: twitterHomeURL))
     }
 
     // MARK: - Test 2: Ignores intermediate navigations (x.com/login/flow/...)

@@ -53,7 +53,9 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
     private var completion: ((Result<ExtractedContent, Error>) -> Void)?
     private var pendingURL: URL?
     private var pendingCookies: [HTTPCookie] = []
+    private var retryCount = 0
     private let bundle: Bundle
+    private let maxRetries = 2
 
     /// Designated initialiser.
     /// - Parameter bundle: The bundle from which readability.js is loaded.
@@ -79,6 +81,7 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
         self.completion = completion
         self.pendingURL = url
         self.pendingCookies = cookies
+        self.retryCount = 0
 
         // Create a fresh WKWebView configuration with a non-persistent data store.
         let config = WKWebViewConfiguration()
@@ -109,13 +112,13 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
     public func webView(_ webView: WKWebView,
                         didFail navigation: WKNavigation!,
                         withError error: Error) {
-        finish(with: .failure(error))
+        handleNavigationFailure(error: error)
     }
 
     public func webView(_ webView: WKWebView,
                         didFailProvisionalNavigation navigation: WKNavigation!,
                         withError error: Error) {
-        finish(with: .failure(error))
+        handleNavigationFailure(error: error)
     }
 
     // MARK: - Private
@@ -182,5 +185,48 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
         webView?.navigationDelegate = nil
         webView = nil
         DispatchQueue.main.async { block?(result) }
+    }
+
+    private func handleNavigationFailure(error: Error) {
+        if shouldRetryForFrameLoadInterruption(error: error), retryCount < maxRetries {
+            retryCount += 1
+            retryLoadAfterInterruption()
+            return
+        }
+        finish(with: .failure(error))
+    }
+
+    private func shouldRetryForFrameLoadInterruption(error: Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == WKErrorDomain
+            && nsError.code == WKError.Code.frameLoadInterruptedByPolicyChange.rawValue
+    }
+
+    private func retryLoadAfterInterruption() {
+        guard let currentURL = pendingURL else { return }
+        let retryURL = (retryCount == 1) ? currentURL : swappedXTwitterHost(url: currentURL)
+        pendingURL = retryURL
+        webView?.load(URLRequest(url: retryURL))
+    }
+
+    private func swappedXTwitterHost(url: URL) -> URL {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let host = components.host else {
+            return url
+        }
+
+        if host == "x.com" || host.hasSuffix(".x.com") {
+            components.host = host.replacingOccurrences(of: ".x.com", with: ".twitter.com")
+                .replacingOccurrences(of: "x.com", with: "twitter.com")
+            return components.url ?? url
+        }
+
+        if host == "twitter.com" || host.hasSuffix(".twitter.com") {
+            components.host = host.replacingOccurrences(of: ".twitter.com", with: ".x.com")
+                .replacingOccurrences(of: "twitter.com", with: "x.com")
+            return components.url ?? url
+        }
+
+        return url
     }
 }

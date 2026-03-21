@@ -5,11 +5,14 @@
 .worktrees/
 .claude/worktrees/
 
+# macOS
+.DS_Store
+
 # Xcode
-ios/*.xcodeproj/xcuserdata/
-ios/*.xcworkspace/xcuserdata/
-ios/build/
-ios/DerivedData/
+xcuserdata/
+*.xcuserstate
+build/
+DerivedData/
 *.pbxuser
 *.mode1v3
 *.mode2v3
