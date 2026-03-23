@@ -113,13 +113,13 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
     public func webView(_ webView: WKWebView,
                         decidePolicyFor navigationAction: WKNavigationAction,
                         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        // Block non-HTTP(S) navigations (e.g. twitter://) to prevent frame-load interruptions.
-        if let scheme = navigationAction.request.url?.scheme?.lowercased(),
-           scheme != "http", scheme != "https" {
-            decisionHandler(.cancel)
-            return
-        }
-        decisionHandler(.allow)
+        decisionHandler(Self.navigationPolicy(for: navigationAction.request.url))
+    }
+
+    /// Returns `.cancel` for non-HTTP(S) URLs (e.g. twitter://) to prevent frame-load interruptions.
+    static func navigationPolicy(for url: URL?) -> WKNavigationActionPolicy {
+        guard let scheme = url?.scheme?.lowercased() else { return .allow }
+        return (scheme == "http" || scheme == "https") ? .allow : .cancel
     }
 
     public func webView(_ webView: WKWebView,

@@ -149,6 +149,23 @@ final class ContentExtractorTests: XCTestCase {
         }
         waitForExpectations(timeout: 1)
     }
+    // MARK: - Test 5: Navigation policy blocks non-HTTP(S) schemes
+
+    func testNavigationPolicyBlocksNonHTTPSchemes() {
+        let twitter = URL(string: "twitter://timeline")!
+        XCTAssertEqual(ContentExtractor.navigationPolicy(for: twitter), .cancel)
+
+        let tel = URL(string: "tel:+1234567890")!
+        XCTAssertEqual(ContentExtractor.navigationPolicy(for: tel), .cancel)
+
+        let https = URL(string: "https://x.com/article")!
+        XCTAssertEqual(ContentExtractor.navigationPolicy(for: https), .allow)
+
+        let http = URL(string: "http://example.com")!
+        XCTAssertEqual(ContentExtractor.navigationPolicy(for: http), .allow)
+
+        XCTAssertEqual(ContentExtractor.navigationPolicy(for: nil), .allow)
+    }
 }
 
 // MARK: - ContentExtractionError conformance check (compile-time)
