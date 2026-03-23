@@ -83,9 +83,10 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
         self.pendingCookies = cookies
         self.retryCount = 0
 
-        // Create a fresh WKWebView configuration with a non-persistent data store.
+        // Create a fresh WKWebView configuration using the default persistent data store.
+        // A non-persistent store causes sandbox-extension failures on real devices,
+        // killing the web-content process before navigation completes.
         let config = WKWebViewConfiguration()
-        config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let wv = WKWebView(frame: .zero, configuration: config)
         wv.navigationDelegate = self
         self.webView = wv
@@ -107,6 +108,18 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         injectReadabilityAndExtract(webView: webView)
+    }
+
+    public func webView(_ webView: WKWebView,
+                        decidePolicyFor navigationAction: WKNavigationAction,
+                        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        // Block non-HTTP(S) navigations (e.g. twitter://) to prevent frame-load interruptions.
+        if let scheme = navigationAction.request.url?.scheme?.lowercased(),
+           scheme != "http", scheme != "https" {
+            decisionHandler(.cancel)
+            return
+        }
+        decisionHandler(.allow)
     }
 
     public func webView(_ webView: WKWebView,
@@ -198,8 +211,9 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
 
     private func shouldRetryForFrameLoadInterruption(error: Error) -> Bool {
         let nsError = error as NSError
-        return nsError.domain == WKErrorDomain
-            && nsError.code == WKError.Code.frameLoadInterruptedByPolicyChange.rawValue
+        // WebKitErrorFrameLoadInterruptedByPolicyChange = 102
+        return nsError.domain == "WebKitErrorDomain"
+            && nsError.code == 102
     }
 
     private func retryLoadAfterInterruption() {
