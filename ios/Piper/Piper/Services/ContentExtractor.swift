@@ -83,12 +83,14 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
         self.pendingCookies = cookies
         self.retryCount = 0
 
-        // Create a fresh WKWebView configuration using the default persistent data store.
-        // A non-persistent store causes sandbox-extension failures on real devices,
-        // killing the web-content process before navigation completes.
         let config = WKWebViewConfiguration()
+        let pagePrefs = WKWebpagePreferences()
+        pagePrefs.preferredContentMode = .desktop
+        config.defaultWebpagePreferences = pagePrefs
+
         let wv = WKWebView(frame: .zero, configuration: config)
         wv.navigationDelegate = self
+        wv.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15"
         self.webView = wv
 
         // Inject cookies before loading the page.

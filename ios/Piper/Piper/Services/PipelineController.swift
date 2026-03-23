@@ -84,25 +84,38 @@ public final class PipelineController {
 
     // MARK: - Public API
 
-    /// Runs the full pipe flow for the given URL string.
-    ///
-    /// - Parameter urlString: A raw URL string (e.g. from UIPasteboard).
-    /// - Returns: The UUID URL string returned by the backend.
-    /// - Throws: `PipelineError` on any failure — never fails silently.
-    public func pipe(urlString: String) async throws -> String {
-        // Step 1: Validate cookies — must be logged in.
+    /// Validates cookies and URL, returns the parsed URL and cookies for extraction.
+    /// Call this before showing ExtractionWebView.
+    public func validate(urlString: String) throws -> (url: URL, cookies: [HTTPCookie]) {
         guard cookieProvider.hasCookies else {
             throw PipelineError.notLoggedIn
         }
-
-        // Step 2: Validate URL — must be parseable.
         guard let url = URL(string: urlString), url.scheme != nil, url.host != nil else {
             throw PipelineError.invalidURL
         }
+        return (url, cookieProvider.loadCookies())
+    }
 
-        let cookies = cookieProvider.loadCookies()
+    /// Saves extracted content to the backend. Returns the UUID URL.
+    public func save(title: String, content: String) async throws -> String {
+        let resultURL: String = try await withCheckedThrowingContinuation { continuation in
+            apiClient.save(title: title, content: content) { result in
+                switch result {
+                case .success(let url):
+                    continuation.resume(returning: url)
+                case .failure(let error):
+                    continuation.resume(throwing: PipelineError.saveFailed(error.localizedDescription))
+                }
+            }
+        }
+        return resultURL
+    }
 
-        // Step 3: Extract content.
+    /// Runs the full pipe flow for the given URL string.
+    /// Used by tests and as a convenience — production flow uses validate() + ExtractionWebView + save().
+    public func pipe(urlString: String) async throws -> String {
+        let (url, cookies) = try validate(urlString: urlString)
+
         let extracted: ExtractedContent = try await withCheckedThrowingContinuation { continuation in
             extractor.extract(from: url, cookies: cookies) { result in
                 switch result {
@@ -114,18 +127,6 @@ public final class PipelineController {
             }
         }
 
-        // Step 4: Save to backend.
-        let resultURL: String = try await withCheckedThrowingContinuation { continuation in
-            apiClient.save(title: extracted.title, content: extracted.content) { result in
-                switch result {
-                case .success(let url):
-                    continuation.resume(returning: url)
-                case .failure(let error):
-                    continuation.resume(throwing: PipelineError.saveFailed(error.localizedDescription))
-                }
-            }
-        }
-
-        return resultURL
+        return try await save(title: extracted.title, content: extracted.content)
     }
 }
