@@ -38,8 +38,8 @@ Read all of these before writing anything:
 2. All `.cycle-findings.md` files in the worktree path (may not exist if cycle 1 passed)
 3. `.builder-breadcrumbs.md` in the worktree path (builder's self-reported misses — may not exist if cycle 1 passed)
 4. `gh pr diff <pr-number>` — the final code diff
-5. `.claude/skills/build/builder.md`
-6. `.claude/skills/build/reviewer.md`
+5. `.claude/skills/build/builder.md` (or `.claude/skills/bugfix/bugfix.md`)
+6. `.claude/skills/shared/reviewer.md`
 7. `docs/exec-plans/_template.md`
 8. `.claude/scripts/` — all scripts (create-worktree.sh, run-verify.sh, publish-pr.sh, escalate-pr.sh)
 9. `ARCHITECTURE.md` and the relevant domain doc (`docs/BACKEND.md` or `docs/IOS.md`)

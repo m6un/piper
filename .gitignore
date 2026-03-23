@@ -12,6 +12,7 @@
 xcuserdata/
 *.xcuserstate
 build/
+!.claude/skills/build/
 DerivedData/
 *.pbxuser
 *.mode1v3

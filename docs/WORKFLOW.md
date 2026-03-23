@@ -121,7 +121,8 @@ They work identically in local and remote (cloud VM) environments.
 ## Agent Implementations
 | Agent | Implementation |
 |-------|---------------|
-| Claude Code | `.claude/skills/build/SKILL.md` |
+| Claude Code (build) | `.claude/skills/build/SKILL.md` |
+| Claude Code (bugfix) | `.claude/skills/bugfix/SKILL.md` |
 
 To add a new agent: implement the workflow above using that agent's native skill/command
 format. Point to this document as the source of truth.

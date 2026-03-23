@@ -48,6 +48,6 @@ Built Piper's share extension: reads cookies from the App Group, loads the share
 
 ## Actions
 
-- [ ] `.claude/skills/build/reviewer.md`: Add a check — before flagging a skipped CI job as a failure, verify whether the job's `runs-on` requires a self-hosted runner that may not be registered in this environment. If so, note it as expected and do not FAIL on it. (root cause: finding #1)
+- [ ] `.claude/skills/shared/reviewer.md`: Add a check — before flagging a skipped CI job as a failure, verify whether the job's `runs-on` requires a self-hosted runner that may not be registered in this environment. If so, note it as expected and do not FAIL on it. (root cause: finding #1)
 - [ ] `.claude/scripts/publish-pr.sh`: Remove `--json number --jq '.number'` from `gh pr create`; capture PR URL from plain stdout (`gh pr create` prints the URL on success) and print it. (root cause: finding #2)
 - [ ] `.claude/skills/build/builder.md`: Add a note in the Orient or Self-Review section — do not attempt to push changes to `.github/workflows/` without first confirming the OAuth token has `workflow` scope (`gh auth status` will show granted scopes). If scope is absent, note the gap and move on rather than consuming a cycle on an impossible fix. (root cause: finding #3)

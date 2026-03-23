@@ -23,7 +23,7 @@ Not a product feature — this is the infrastructure that enables agent-driven d
 ## Phase 2 — Build Loop (Ralph Wiggum)
 - [x] `.claude/skills/build/SKILL.md` — `/build` entry point
 - [x] `.claude/skills/build/builder.md` — builder agent prompt
-- [x] `.claude/skills/build/reviewer.md` — reviewer agent prompt (checks CI)
+- [x] `.claude/skills/shared/reviewer.md` — reviewer agent prompt (checks CI)
 - [x] `.claude/scripts/create-worktree.sh`
 - [x] `.claude/scripts/run-verify.sh`
 - [x] `.claude/scripts/publish-pr.sh`

@@ -38,8 +38,6 @@ if [ -d "backend" ]; then
 fi
 
 # ── iOS (Swift) ──────────────────────────────────────────────────────────────
-# Note: xcodebuild not available on cloud VMs — swiftlint only for now.
-# Full build/test requires a macOS runner or local execution.
 if [ -d "ios" ]; then
   echo "▶ ios: layer rules"
   bash .github/scripts/lint-ios-layers.sh 2>&1 || { echo "✗ ios:layer-rules failed"; FAILED=1; }
@@ -49,6 +47,34 @@ if [ -d "ios" ]; then
     swiftlint --path ios 2>&1 || { echo "✗ ios:swiftlint failed"; FAILED=1; }
   else
     echo "⚠ ios: swiftlint not found, skipping"
+  fi
+
+  # xcodebuild: only available on macOS with Xcode installed.
+  # On VPS (Linux) this step is skipped automatically.
+  if command -v xcodebuild &>/dev/null; then
+    XCODE_PROJECT="ios/Piper/Piper.xcodeproj"
+    # Pick the first available iPhone simulator.
+    SIM_DEST=$(xcodebuild -project "$XCODE_PROJECT" -scheme Piper \
+      -showdestinations 2>/dev/null \
+      | grep 'platform:iOS Simulator.*iPhone' \
+      | head -1 \
+      | sed 's/.*{ //' | sed 's/ }.*//') || true
+
+    if [ -n "$SIM_DEST" ]; then
+      echo "▶ ios: xcodebuild build (${SIM_DEST})"
+      xcodebuild build -project "$XCODE_PROJECT" -scheme Piper \
+        -destination "$SIM_DEST" -quiet 2>&1 \
+        || { echo "✗ ios:xcodebuild-build failed"; FAILED=1; }
+
+      echo "▶ ios: xcodebuild test"
+      xcodebuild test -project "$XCODE_PROJECT" -scheme Piper \
+        -destination "$SIM_DEST" -quiet 2>&1 \
+        || { echo "✗ ios:xcodebuild-test failed"; FAILED=1; }
+    else
+      echo "⚠ ios: no iPhone simulator found, skipping xcodebuild"
+    fi
+  else
+    echo "⚠ ios: xcodebuild not found (not macOS?), skipping build/test"
   fi
 fi
 
