@@ -22,6 +22,7 @@ final class InMemoryStorage: CookieStorage {
 
 // MARK: - Tests
 
+@MainActor
 final class CookieManagerTests: XCTestCase {
 
     private var storage: InMemoryStorage!

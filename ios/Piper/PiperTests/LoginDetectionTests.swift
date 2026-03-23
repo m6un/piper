@@ -5,6 +5,7 @@
 import XCTest
 @testable import Piper
 
+@MainActor
 final class LoginDetectionTests: XCTestCase {
 
     // MARK: - Helpers

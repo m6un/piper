@@ -42,6 +42,7 @@ final class MockContentExtractor: ContentExtracting {
 
 // MARK: - Tests
 
+@MainActor
 final class ContentExtractorTests: XCTestCase {
 
     private var sut: MockContentExtractor!

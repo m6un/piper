@@ -6,6 +6,7 @@ import XCTest
 import SwiftUI
 @testable import Piper
 
+@MainActor
 final class ContentViewTests: XCTestCase {
 
     // MARK: - Helpers

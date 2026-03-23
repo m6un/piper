@@ -53,12 +53,13 @@ if [ -d "ios" ]; then
   # On VPS (Linux) this step is skipped automatically.
   if command -v xcodebuild &>/dev/null; then
     XCODE_PROJECT="ios/Piper/Piper.xcodeproj"
-    # Pick the first available iPhone simulator.
-    SIM_DEST=$(xcodebuild -project "$XCODE_PROJECT" -scheme Piper \
+    # Pick the first available iPhone simulator (name only for reliable matching).
+    SIM_NAME=$(xcodebuild -project "$XCODE_PROJECT" -scheme Piper \
       -showdestinations 2>/dev/null \
       | grep 'platform:iOS Simulator.*iPhone' \
       | head -1 \
-      | sed 's/.*{ //' | sed 's/ }.*//') || true
+      | sed 's/.*name://' | sed 's/ }.*//') || true
+    SIM_DEST="${SIM_NAME:+platform=iOS Simulator,name=$SIM_NAME}"
 
     if [ -n "$SIM_DEST" ]; then
       echo "▶ ios: xcodebuild build (${SIM_DEST})"
