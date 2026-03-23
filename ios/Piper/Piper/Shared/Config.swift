@@ -8,5 +8,5 @@ import Foundation
 public enum Config {
     /// The base URL of the Piper Cloudflare Worker backend.
     /// No trailing slash.
-    public static let backendBaseURL = "https://piper.workers.dev"
+    public static let backendBaseURL = "https://piper-backend.instapiper.workers.dev"
 }

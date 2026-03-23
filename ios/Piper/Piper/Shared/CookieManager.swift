@@ -25,6 +25,8 @@ final class StandardStorage: CookieStorage {
         self.defaults = UserDefaults.standard
     }
 
+    nonisolated deinit {}
+
     func data(forKey key: String) -> Data? { defaults.data(forKey: key) }
     func set(_ value: Data?, forKey key: String) { defaults.set(value, forKey: key) }
     func removeObject(forKey key: String) { defaults.removeObject(forKey: key) }
@@ -60,6 +62,10 @@ public final class CookieManager {
     public init(storage: CookieStorage) {
         self.storage = storage
     }
+
+    // Explicit nonisolated deinit prevents executor-based deallocation crash
+    // when the module uses SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor.
+    nonisolated deinit {}
 
     // MARK: - Public API
 

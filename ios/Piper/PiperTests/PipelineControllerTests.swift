@@ -54,6 +54,7 @@ private final class MockAPIClient: PiperAPIClientProtocol {
 
 // MARK: - Tests
 
+@MainActor
 final class PipelineControllerTests: XCTestCase {
 
     private let validURL = "https://x.com/some/article"

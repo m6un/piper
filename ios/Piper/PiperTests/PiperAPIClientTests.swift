@@ -42,6 +42,7 @@ private func makeHTTPResponse(statusCode: Int) -> HTTPURLResponse {
 
 // MARK: - Tests
 
+@MainActor
 final class PiperAPIClientTests: XCTestCase {
 
     private var session: MockURLSession!

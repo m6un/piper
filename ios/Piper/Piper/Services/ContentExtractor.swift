@@ -83,11 +83,14 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
         self.pendingCookies = cookies
         self.retryCount = 0
 
-        // Create a fresh WKWebView configuration with a non-persistent data store.
         let config = WKWebViewConfiguration()
-        config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+        let pagePrefs = WKWebpagePreferences()
+        pagePrefs.preferredContentMode = .desktop
+        config.defaultWebpagePreferences = pagePrefs
+
         let wv = WKWebView(frame: .zero, configuration: config)
         wv.navigationDelegate = self
+        wv.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15"
         self.webView = wv
 
         // Inject cookies before loading the page.
@@ -107,6 +110,18 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         injectReadabilityAndExtract(webView: webView)
+    }
+
+    public func webView(_ webView: WKWebView,
+                        decidePolicyFor navigationAction: WKNavigationAction,
+                        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(Self.navigationPolicy(for: navigationAction.request.url))
+    }
+
+    /// Returns `.cancel` for non-HTTP(S) URLs (e.g. twitter://) to prevent frame-load interruptions.
+    static func navigationPolicy(for url: URL?) -> WKNavigationActionPolicy {
+        guard let scheme = url?.scheme?.lowercased() else { return .allow }
+        return (scheme == "http" || scheme == "https") ? .allow : .cancel
     }
 
     public func webView(_ webView: WKWebView,
@@ -198,8 +213,9 @@ public final class ContentExtractor: NSObject, ContentExtracting, WKNavigationDe
 
     private func shouldRetryForFrameLoadInterruption(error: Error) -> Bool {
         let nsError = error as NSError
-        return nsError.domain == WKErrorDomain
-            && nsError.code == WKError.Code.frameLoadInterruptedByPolicyChange.rawValue
+        // WebKitErrorFrameLoadInterruptedByPolicyChange = 102
+        return nsError.domain == "WebKitErrorDomain"
+            && nsError.code == 102
     }
 
     private func retryLoadAfterInterruption() {
